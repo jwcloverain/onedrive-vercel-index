@@ -1,8 +1,11 @@
 {
-  "crons": [
-    {
-      "path": "/api/cron/refresh-tokens",
-      "schedule": "0 0 * * *"
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "schedules": {
+    "refresh-onedrive-tokens": {
+      "schedule": "0 3 * * *",
+      "timezone": "Asia/Shanghai",
+      "path": "/api/schedules/refresh-tokens",
+      "requestMethod": "GET"
     }
-  ]
+  }
 }

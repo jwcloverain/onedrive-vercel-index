@@ -14,12 +14,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return
   }
 
-  const secret = process.env.CRON_SECRET
-  if (!secret || req.headers.authorization !== `Bearer ${secret}`) {
-    res.status(401).json({ error: 'Unauthorized' })
-    return
-  }
-
   const now = Date.now()
   const lastRefresh = await getLastOdAuthTokenRefresh()
   if (lastRefresh !== null && now - lastRefresh < refreshIntervalMs) {
