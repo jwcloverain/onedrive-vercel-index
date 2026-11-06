@@ -76,6 +76,30 @@ export async function getAccessToken(): Promise<string> {
   return ''
 }
 
+export async function refreshOdAuthTokens(): Promise<boolean> {
+  const { refreshToken } = await getOdAuthTokens()
+  if (typeof refreshToken !== 'string') return false
+
+  const body = new URLSearchParams()
+  body.append('client_id', apiConfig.clientId)
+  body.append('redirect_uri', apiConfig.redirectUri)
+  body.append('client_secret', clientSecret)
+  body.append('refresh_token', refreshToken)
+  body.append('grant_type', 'refresh_token')
+
+  const { data } = await axios.post(apiConfig.authApi, body, {
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+  })
+  if (!data.access_token || !data.refresh_token) return false
+
+  await storeOdAuthTokens({
+    accessToken: data.access_token,
+    accessTokenExpiry: Number.parseInt(data.expires_in, 10),
+    refreshToken: data.refresh_token,
+  })
+  return true
+}
+
 /**
  * Match protected routes in site config to get path to required auth token
  * @param path Path cleaned in advance
